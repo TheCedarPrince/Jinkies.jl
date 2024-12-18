@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+JINX = "cd0adc42-0d61-404c-a6a1-590b90f15aef"
