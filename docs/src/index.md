@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = JINX
+CurrentModule = Jinkies
 ```
 
-# JINX
+# Jinkies
 
-Documentation for [JINX](https://github.com/TheCedarPrince/JINX.jl).
+Documentation for [Jinkies](https://github.com/TheCedarPrince/Jinkies.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [JINX]
+Modules = [Jinkies]
 ```

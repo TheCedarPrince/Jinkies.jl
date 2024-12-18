@@ -1,6 +1,6 @@
-using JINX
+using Jinkies
 using Test
 
-@testset "JINX.jl" begin
+@testset "Jinkies.jl" begin
     # Write your tests here.
 end

@@ -72,6 +72,6 @@ jobs:
         shell: julia --project=docs --color=yes {0}
         run: |
           using Documenter: DocMeta, doctest
-          using JINX
-          DocMeta.setdocmeta!(JINX, :DocTestSetup, :(using JINX); recursive=true)
-          doctest(JINX)
+          using Jinkies
+          DocMeta.setdocmeta!(Jinkies, :DocTestSetup, :(using Jinkies); recursive=true)
+          doctest(Jinkies)

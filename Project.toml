@@ -1,7 +1,10 @@
-name = "JINX"
+name = "Jinkies"
 uuid = "cd0adc42-0d61-404c-a6a1-590b90f15aef"
 authors = ["TheCedarPrince <jacobszelko@gmail.com> and contributors"]
 version = "0.0.1"
+
+[deps]
+PiGPIO = "bb151fc1-c6dc-5496-8ed6-07f94907e623"
 
 [compat]
 julia = "1.6"
