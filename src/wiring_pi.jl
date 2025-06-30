@@ -1,4 +1,6 @@
 using WiringPi
+using Images
+using BMPImages
 
 # TODO: Compare every single function with epd7in5_V2.py The good news is that WiringPi should have every function needed here. 
 # NOTE: send_data2 is a loop over the send_data command to my knowledge
@@ -42,23 +44,21 @@ function EPD_7_IN_5_V2_Display(Image::Vector{UInt8})
     EPD_7_IN_5_V2_TurnOnDisplay()
 end
 
-
 function EPD_7_IN_5_V2_Sleep()
     EPD_7_IN_5_V2_SendCommand(0x50)
-    EPD_7_IN_5_V2_SendData(0XF7)
+    EPD_7_IN_5_V2_SendData(0xF7)
 
     EPD_7_IN_5_V2_SendCommand(0x02)
     EPD_7_IN_5_V2_ReadBusyH()
 
     EPD_7_IN_5_V2_SendCommand(0x07)
-    EPD_7_IN_5_V2_SendData(0XA5)
+    EPD_7_IN_5_V2_SendData(0xA5)
 
     delay(2000)
-    # TODO: I do not know how to implement the module_exit method just yet
-    # epdconfig.module_exit()
+    pinMode(EPD_RST_PIN, 0)
+    pinMode(EPD_DC_PIN, 0)
+    pinMode(EPD_PWR_PIN, 0)
 end
-
-
 
 # TODO: Redo this function
 function EPD_7_IN_5_V2_Clear( color::UInt8)
@@ -170,14 +170,14 @@ function EPD_7_IN_5_V2_Init()
     EPD_7_IN_5_V2_SendData(0x01)
     EPD_7_IN_5_V2_SendData(0xE0) 
 
-    EPD_7_IN_5_V2_SendCommand(0X15)
+    EPD_7_IN_5_V2_SendCommand(0x15)
     EPD_7_IN_5_V2_SendData(0x00)
 
-    EPD_7_IN_5_V2_SendCommand(0X50)
+    EPD_7_IN_5_V2_SendCommand(0x50)
     EPD_7_IN_5_V2_SendData(0x10)
     EPD_7_IN_5_V2_SendData(0x07)
 
-    EPD_7_IN_5_V2_SendCommand(0X60)
+    EPD_7_IN_5_V2_SendCommand(0x60)
     EPD_7_IN_5_V2_SendData(0x22)
     
 end
@@ -205,3 +205,80 @@ function shutDown()
     digitalWrite(EPD_RST_PIN, 0)
 end
 
+# Example:
+
+init()
+img = fill(0x00, 48_000)
+
+# Fun message
+
+# H
+img[22_000:100:26_000] .= 0xff
+img[23_498:100:24_498] .= 0xff
+img[23_499:100:24_499] .= 0xff
+img[21_997:100:25_997] .= 0xff
+
+# I
+img[21_994:100:25_994] .= 0xff
+
+# J
+img[21_988:100:25_988] .= 0xff
+img[25_489:100:25_989] .= 0xff
+img[25_490:100:25_990] .= 0xff
+img[21_989:100:22_489] .= 0xff
+img[21_990:100:22_490] .= 0xff
+
+# U
+img[21_986:100:25_986] .= 0xff
+img[21_985:100:22_485] .= 0xff
+img[21_984:100:22_484] .= 0xff
+img[21_983:100:25_983] .= 0xff
+
+# L
+img[21_979:100:22_479] .= 0xff
+img[21_980:100:22_480] .= 0xff
+img[21_981:100:25_981] .= 0xff
+
+# I
+img[21_977:100:25_977] .= 0xff
+
+# A
+img[21_975:100:25_975] .= 0xff
+img[25_474:100:25_974] .= 0xff
+img[23_474:100:23_974] .= 0xff
+img[21_973:100:25_973] .= 0xff
+
+EPD_7_IN_5_V2_SendCommand(0x10)
+EPD_7_IN_5_V2_SendData.(img)
+
+delayMicroseconds(100)
+EPD_7_IN_5_V2_SendCommand(0x13)
+EPD_7_IN_5_V2_SendData.(img)
+
+delayMicroseconds(100)
+EPD_7_IN_5_V2_SendCommand(0x12)
+delayMicroseconds(100)
+
+EPD_7_IN_5_V2_ReadBusyH()
+EPD_7_IN_5_V2_TurnOnDisplay()
+
+# Read and resize BMP image
+bmp = read_bmp("7in5_V2.bmp")
+img = imresize(bmp, (100, 480))
+img[findall(x -> x != 1.0, img)] .= 0.0
+img = replace(img, 0x01 => 0xff)
+img = convert.(UInt8, img)
+
+# X's
+width = 100
+height = 480
+img = fill(0x00, width * height)  # start with black image
+
+# Draw a white X
+for y in 1:height
+    x1 = y % width + 1             # diagonal \
+    x2 = (width - (y % width)) + 1 # diagonal /
+    
+    img[(y - 1) * width + x1] = 0xff
+    img[(y - 1) * width + x2] = 0xff
+end 
