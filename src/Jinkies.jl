@@ -25,18 +25,18 @@ module Jinkies
         return out, .~out
     end
 
-    function display_image(Image::Vector{UInt8})
-        Width::Int64 = (EPD_7_IN_5_WIDTH % 2 == 0) ? (EPD_7_IN_5_WIDTH / 2 ) : (EPD_7_IN_5_WIDTH / 2 + 1)
-        Height::Int64 = EPD_7_IN_5_HEIGHT
-
+    function display_image(img)
         send_command(0x10)
-        counter = 0
-        for  j::Int64=0:Height-1
-            for i::Int64=1:Width
-                send_data(Image[i + j * Width]);
-                counter += 1
-            end
-        end
+        send_data.(img)
+
+        delayMicroseconds(100)
+        send_command(0x13)
+        send_data.(.~img)
+
+        delayMicroseconds(100)
+        send_command(0x12)
+
+        read_busy()
         turn_on_display()
     end
 
