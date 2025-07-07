@@ -22,7 +22,7 @@ module Jinkies
             end
         end
 
-        return out, .~out
+        return out
     end
 
     function display_image(img)
